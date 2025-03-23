@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
-import 'package:flutter_find_recipes/ui/theme/colors.dart';
-import 'package:flutter_find_recipes/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+
+import 'recipes/recipe_list.dart';
+import 'theme/colors.dart';
+import '../utils.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key, required this.title});
@@ -22,12 +24,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   @override
   void initState() {
     super.initState();
-    // TODO create a RecipeList
-    pageList.add(
-      const Center(
-        child: Text('Recipe List'),
-      )
-    );
+    pageList.add(const RecipeList());
     // TODO create a GroceryList
     pageList.add(
       const Center(

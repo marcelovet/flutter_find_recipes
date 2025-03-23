@@ -12,6 +12,7 @@ import '../bookmarks/bookmarks.dart';
 import '../theme/colors.dart';
 import '../widgets/common.dart';
 import '../widgets/custom_dropdown.dart';
+import 'recipe_details.dart';
 
 enum ListType {all, bookmarks}
 
@@ -277,8 +278,7 @@ class _RecipeListState extends ConsumerState<RecipeList> {
       onTap: () => Navigator.push(
         topLevelContext,
         MaterialPageRoute(
-          // TODO: add recipe detail page
-          builder: (context) => Container(), //RecipeDetail(recipe: recipe),
+          builder: (context) => RecipeDetails(recipe: recipe),
         ),
       ),
       // add  recipe card
