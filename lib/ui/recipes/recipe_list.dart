@@ -5,6 +5,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_find_recipes/data/models/models.dart';
 
+import '../widgets/common.dart';
+
 enum ListType {all, bookmarks}
 
 class RecipeList extends ConsumerStatefulWidget {
@@ -78,6 +80,33 @@ class _RecipeListState extends ConsumerState<RecipeList> {
         }
       }
     });
+  }
+  
+  Widget buildScrollList(List<Widget> topList, Widget bottomWidget) {
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        ...topList,
+        ScrollConfiguration(
+          behavior: const ScrollBehavior().copyWith(
+            dragDevices: {PointerDeviceKind.mouse, PointerDeviceKind.touch},
+            physics: const ClampingScrollPhysics(),
+          ),
+          child: Expanded(
+            child: CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                SliverPadding(
+                  padding: allPadding8,
+                  sliver: bottomWidget,
+                )
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
   
   @override
