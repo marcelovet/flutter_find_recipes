@@ -5,16 +5,17 @@ import 'package:flutter/services.dart';
 import 'package:logging/logging.dart' as system_log;
 import 'package:lumberdash/lumberdash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_find_recipes/ui/theme/theme.dart';
-import 'package:flutter_find_recipes/utils.dart';
-import 'package:flutter_find_recipes/ui/main_screen.dart';
+import 'ui/theme/theme.dart';
+import 'utils.dart';
+import 'ui/main_screen.dart';
 
 Future<void> main() async {
   _setupLogging();
   WidgetsFlutterBinding.ensureInitialized(); // binding between Flutter and OS
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive); // hide status bar
+   // hide status bar
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
   if (isDesktop()) {
-    await DesktopWindow.setWindowSize(const Size(600, 600));
+    await DesktopWindow.setWindowSize(const Size(1600, 1200));
     await DesktopWindow.setMinWindowSize(const Size(260, 600));
   }
   // TODO Add Shared Preferences
@@ -71,7 +72,9 @@ class _RecipeFinderState extends State<RecipeFinder> {
                   SystemNavigator.pop();
                 });
               },
-              shortcut: const SingleActivator(LogicalKeyboardKey.keyQ, meta: true),
+              shortcut: const SingleActivator(
+                LogicalKeyboardKey.keyQ, meta: true
+              ),
             ),
           ],
         )
