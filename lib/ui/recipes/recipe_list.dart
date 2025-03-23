@@ -107,6 +107,39 @@ class _RecipeListState extends ConsumerState<RecipeList> {
     );
   }
   
+  Widget _buildTypePicker() {
+    return IntrinsicWidth(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SegmentedButton(
+              segments: const <ButtonSegment<ListType>>[
+                ButtonSegment(
+                  value: ListType.all,
+                  label: Text('All'),
+                  enabled: true,
+                ),
+                ButtonSegment(
+                  value: ListType.bookmarks,
+                  label: Text('Bookmarks'),
+                  enabled: true,
+                ),
+              ],
+              selected: {currentType},
+              onSelectionChanged: (Set<ListType> newSelection) {
+                setState(() {
+                  currentType = newSelection.first;
+                });
+              },
+            )
+          ],
+        ),
+      ),
+    );
+  }
+  
   Widget buildScrollList(List<Widget> topList, Widget bottomWidget) {
     return Column(
       mainAxisSize: MainAxisSize.max,
