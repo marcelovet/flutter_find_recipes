@@ -6,6 +6,7 @@ const emptyWidget = SizedBox();
 
 const emptySliverWidget = SliverToBoxAdapter(child: emptyWidget);
 
+const allPadding4 = EdgeInsets.all(4.0);
 const allPadding16 = EdgeInsets.all(16.0);
 const allPadding8 = EdgeInsets.all(8.0);
 const horizontalPadding16 = EdgeInsets.symmetric(horizontal: 16.0);

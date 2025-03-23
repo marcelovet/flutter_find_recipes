@@ -3,10 +3,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_find_recipes/data/models/models.dart';
 
+import '../../data/models/models.dart';
 import '../theme/colors.dart';
 import '../widgets/common.dart';
+import '../widgets/custom_dropdown.dart';
 
 enum ListType {all, bookmarks}
 
@@ -134,6 +135,90 @@ class _RecipeListState extends ConsumerState<RecipeList> {
                 });
               },
             )
+          ],
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildSearchCard() {
+    return Card(
+      elevation: 4.0,
+      shape: const RoundedRectangleBorder(
+        borderRadius: allBorderCircular8,
+      ),
+      child: Padding(
+        padding: allPadding4,
+        child: Row(
+          children: [
+            IconButton(
+              onPressed: () {
+                // TODO: add search
+                final currentFocus = FocusScope.of(context);
+                if (!currentFocus.hasPrimaryFocus) {
+                  currentFocus.unfocus();
+                }
+              },
+              icon: const Icon(Icons.search),
+            ),
+            sizedW8,
+            Expanded(
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextField(
+                      decoration: const InputDecoration(
+                        hintText: 'Search',
+                        border: InputBorder.none,
+                      ),
+                      autofocus: false,
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (value) {
+                        // TODO: add search
+                      },
+                      controller: searchTextController,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        searchTextController.text = '';
+                      });
+                    },
+                    icon: const Icon(Icons.close),
+                  ),
+                  PopupMenuButton<String>(
+                    itemBuilder: (BuildContext context) {
+                      return previousSearches
+                        .map<CustomDropdownMenuItem<String>>(
+                          (String value) {
+                            return CustomDropdownMenuItem<String>(
+                              text: value,
+                              value: value,
+                              callback: () {
+                                setState(() {
+                                  previousSearches.remove(value);
+                                  savePreviousSearches();
+                                  Navigator.pop(context);
+                                });
+                              },
+                            );
+                          }
+                        )
+                        .toList();
+                    },
+                    onSelected: (String value) {
+                      searchTextController.text = value;
+                      // TODO: add search
+                    },
+                    icon: const Icon(
+                      Icons.arrow_drop_down,
+                      color: lightGrey,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
