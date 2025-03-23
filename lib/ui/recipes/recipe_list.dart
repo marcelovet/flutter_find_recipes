@@ -425,6 +425,9 @@ class _RecipeListState extends ConsumerState<RecipeList> {
   
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return switch (currentType) {
+      ListType.all => buildRecipeList(),
+      ListType.bookmarks => buildBookmarkList()
+    };
   }
 }
