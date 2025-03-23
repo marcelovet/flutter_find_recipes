@@ -194,7 +194,7 @@ class _RecipeListState extends ConsumerState<RecipeList> {
           children: [
             IconButton(
               onPressed: () {
-                // TODO: add search
+                startSearch(searchTextController.text);
                 final currentFocus = FocusScope.of(context);
                 if (!currentFocus.hasPrimaryFocus) {
                   currentFocus.unfocus();
@@ -215,7 +215,7 @@ class _RecipeListState extends ConsumerState<RecipeList> {
                       autofocus: false,
                       textInputAction: TextInputAction.done,
                       onSubmitted: (value) {
-                        // TODO: add search
+                        startSearch(searchTextController.text);
                       },
                       controller: searchTextController,
                     ),
@@ -250,7 +250,7 @@ class _RecipeListState extends ConsumerState<RecipeList> {
                     },
                     onSelected: (String value) {
                       searchTextController.text = value;
-                      // TODO: add search
+                      startSearch(searchTextController.text);
                     },
                     icon: const Icon(
                       Icons.arrow_drop_down,
@@ -266,30 +266,49 @@ class _RecipeListState extends ConsumerState<RecipeList> {
     );
   }
   
-  Widget buildScrollList(List<Widget> topList, Widget bottomWidget) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        ...topList,
-        ScrollConfiguration(
-          behavior: const ScrollBehavior().copyWith(
-            dragDevices: {PointerDeviceKind.mouse, PointerDeviceKind.touch},
-            physics: const ClampingScrollPhysics(),
-          ),
-          child: Expanded(
-            child: CustomScrollView(
-              controller: _scrollController,
-              slivers: [
-                SliverPadding(
-                  padding: allPadding8,
-                  sliver: bottomWidget,
-                )
-              ],
-            ),
-          ),
+  Widget _buildRecipeCard(
+    BuildContext topLevelContext,
+    List<Recipe> recipes,
+    int index,
+  ) {
+    final recipe = recipes[index];
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        topLevelContext,
+        MaterialPageRoute(
+          // TODO: add recipe detail page
+          builder: (context) => Container(), //RecipeDetail(recipe: recipe),
         ),
-      ],
+      ),
+      // add  recipe card
+      child: Container(),
+    );
+  }
+  
+  Widget _buildRecipeList(
+    BuildContext recipeListContext,
+    List<Recipe> recipes,
+  ) {
+    return SliverLayoutBuilder(
+      builder: (BuildContext context, SliverConstraints constraints) {
+        final numColumns = max(1, constraints.crossAxisExtent ~/ 264);
+        return SliverGrid(
+          delegate: SliverChildBuilderDelegate(
+            (BuildContext context, int index) {
+              return _buildRecipeCard(
+                recipeListContext,
+                recipes,
+                index,
+              );
+            },
+            childCount: recipes.length,
+          ),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: numColumns,
+            mainAxisExtent: 264,
+          ),
+        );
+      },
     );
   }
   
@@ -345,7 +364,7 @@ class _RecipeListState extends ConsumerState<RecipeList> {
               ),
             );
           } else {
-            // TODO: add buildRecipeList
+            return _buildRecipeList(context, currentSearchList);
           }
         } else {
           if(currentCount == 0) {
@@ -355,10 +374,44 @@ class _RecipeListState extends ConsumerState<RecipeList> {
               ),
             );
           } else {
-            // TODO: add buildRecipeList
+            return _buildRecipeList(context, currentSearchList);
           }
         }
       }
+    );
+  }
+  
+  Widget buildScrollList(List<Widget> topList, Widget bottomWidget) {
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        ...topList,
+        ScrollConfiguration(
+          behavior: const ScrollBehavior().copyWith(
+            dragDevices: {PointerDeviceKind.mouse, PointerDeviceKind.touch},
+            physics: const ClampingScrollPhysics(),
+          ),
+          child: Expanded(
+            child: CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                SliverPadding(
+                  padding: allPadding8,
+                  sliver: bottomWidget,
+                )
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+  
+  Widget buildRecipeList() {
+    return buildScrollList(
+      [_buildHeader(), _buildTypePicker(), _buildSearchCard()],
+      _buildRecipeLoader(context)
     );
   }
   
