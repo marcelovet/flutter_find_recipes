@@ -8,6 +8,7 @@ import '../../data/models/models.dart';
 import '../../network/model_response.dart';
 import '../../network/query_result.dart';
 import '../../network/service_interface.dart';
+import '../bookmarks/bookmarks.dart';
 import '../theme/colors.dart';
 import '../widgets/common.dart';
 import '../widgets/custom_dropdown.dart';
@@ -413,6 +414,13 @@ class _RecipeListState extends ConsumerState<RecipeList> {
       [_buildHeader(), _buildTypePicker(), _buildSearchCard()],
       _buildRecipeLoader(context)
     );
+  }
+
+  Widget buildBookmarkList() {
+    return buildScrollList([
+      _buildHeader(),
+      _buildTypePicker(),
+    ], const Bookmarks());
   }
   
   @override
