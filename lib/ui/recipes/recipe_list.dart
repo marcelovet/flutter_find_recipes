@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_find_recipes/data/models/models.dart';
 
+import '../theme/colors.dart';
 import '../widgets/common.dart';
 
 enum ListType {all, bookmarks}
@@ -80,6 +81,30 @@ class _RecipeListState extends ConsumerState<RecipeList> {
         }
       }
     });
+  }
+  
+  Widget _buildHeader() {
+    return SizedBox(
+      height: 160.0,
+      child: ClipRRect(
+        borderRadius: allBorderCircular8,
+        child: Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                color: lightGreen,
+              ),
+            ),
+            Center(
+              child: Image.asset(
+                'assets/images/background2.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
   
   Widget buildScrollList(List<Widget> topList, Widget bottomWidget) {

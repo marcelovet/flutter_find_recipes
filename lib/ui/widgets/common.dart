@@ -15,6 +15,8 @@ const topPadding8 = EdgeInsets.only(top: 8.0);
 
 const bottomPadding32 = EdgeInsets.only(bottom: 32.0);
 
+const allBorderCircular8 = BorderRadius.all(Radius.circular(8));
+
 const sizedW8 = SizedBox(width: 8);
 const sizedW16 = SizedBox(width: 16);
 const sizedH16 = SizedBox(height: 16);
