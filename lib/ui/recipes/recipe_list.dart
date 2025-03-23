@@ -5,6 +5,9 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/models/models.dart';
+import '../../network/model_response.dart';
+import '../../network/query_result.dart';
+import '../../network/service_interface.dart';
 import '../theme/colors.dart';
 import '../widgets/common.dart';
 import '../widgets/custom_dropdown.dart';
@@ -33,7 +36,7 @@ class _RecipeListState extends ConsumerState<RecipeList> {
   bool inErrorState = false;
   List<String> previousSearches = <String>[];
   ListType currentType = ListType.all;
-  // TODO: add a RecipeResponse
+  Future<RecipeResponse>? currentResponse;
   bool newDataRequired = true;
   
   @override
@@ -83,6 +86,44 @@ class _RecipeListState extends ConsumerState<RecipeList> {
       }
     });
   }
+  
+  Future<RecipeResponse> fetchData() async {
+    if(!newDataRequired && currentResponse != null) {
+      return currentResponse!;
+    }
+    newDataRequired = false;
+    // TODO: Load Recipes
+    /*
+        final recipeService = ref.watch(serviceProvider);
+        currentResponse = recipeService.queryRecipes(
+            searchTextController.text.trim(), currentStartPosition, pageCount);
+        return currentResponse!;
+    */
+    const apiQueryResults = QueryResult(
+      offset: 0,
+      number: 0,
+      totalResults: 0,
+      recipes: <Recipe>[],
+    );
+    return Success(apiQueryResults);
+  }
+
+  void startSearch(String value) {
+    setState(() {
+      currentSearchList.clear();
+      newDataRequired = true;
+      currentCount = 0;
+      currentEndPosition = pageCount;
+      currentStartPosition = 0;
+      hasMore = false;
+      value = value.trim();
+      if (!previousSearches.contains(value)) {
+        previousSearches.add(value);
+        savePreviousSearches();
+      }
+    });
+  }
+  
   
   Widget _buildHeader() {
     return SizedBox(
@@ -249,6 +290,75 @@ class _RecipeListState extends ConsumerState<RecipeList> {
           ),
         ),
       ],
+    );
+  }
+  
+  Sliver _buildRecipeLoader(BuildContext context) {
+    if (searchTextController.text.length < 3) return emptySliverWidget;
+    return FutureBuilder<RecipeResponse>(
+      future: fetchData(),
+      builder: (context, snapshot) {
+        if(snapshot.connectionState == ConnectionState.done) {
+          if(snapshot.hasError) {
+            return SliverFillRemaining(
+              child: Center(
+                child: Text(
+                  snapshot.error.toString(),
+                  textAlign: TextAlign.center,
+                  textScaler: TextScaler.linear(1.3),
+                ),
+              ),
+            );
+          }
+
+          loading = false;
+          final result = snapshot.data;
+          
+          if(result is Error) {
+            const errorMessage = 'Problems getting data';
+            return const SliverFillRemaining(
+              child: Center(
+                child: Text(
+                  errorMessage,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18.0),
+                ),
+              ),
+            );
+          }
+
+          final query = (result as Success).value as QueryResult;
+          inErrorState = false;
+          currentCount = query.totalResults;
+          hasMore = query.totalResults > (query.offset + query.number);
+          currentSearchList.addAll(query.recipes);
+          currentEndPosition =
+              min(query.totalResults, currentEndPosition + query.number);
+          if (currentCount == 0) {
+            return const SliverFillRemaining(
+              child: Center(
+                child: Text(
+                  'No Results',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18.0),
+                ),
+              ),
+            );
+          } else {
+            // TODO: add buildRecipeList
+          }
+        } else {
+          if(currentCount == 0) {
+            return const SliverFillRemaining(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          } else {
+            // TODO: add buildRecipeList
+          }
+        }
+      }
     );
   }
   
