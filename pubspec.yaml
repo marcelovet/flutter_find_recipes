@@ -33,6 +33,7 @@ dependencies:
       ref: 12decbe0f592e14e03223f6f2c0c7e0e2dbd70a1
   freezed_annotation: ^3.0.0
   json_annotation: ^4.9.0
+  shared_preferences: ^2.5.2
 
 dev_dependencies:
   flutter_test:
