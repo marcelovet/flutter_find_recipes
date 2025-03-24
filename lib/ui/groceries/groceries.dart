@@ -89,7 +89,9 @@ class _GroceriesListState extends ConsumerState<GroceriesList> {
                   focusNode: searchFocusNode,
                   autofocus: true,
                   textInputAction: TextInputAction.done,
-                  onSubmitted: (value) => startSearch(searchTextController.text),
+                  onSubmitted: (value) => startSearch(
+                    searchTextController.text,
+                  ),
                   controller: searchTextController,
                 ),
               ),
@@ -154,8 +156,81 @@ class _GroceriesListState extends ConsumerState<GroceriesList> {
     );
   }
 
+  Widget ingredientList(
+    List<Ingredient> ingredients,
+    Map<int, bool>? checkBoxValues,
+    bool showCheckbox
+  ) {
+    return Expanded(
+      child: ListView.builder(
+        controller: _scrollController,
+        itemCount: ingredients.length,
+        itemBuilder: (BuildContext context, int index) {
+          final checked = checkBoxValues?[index] ?? false;
+          return createIngredientCard(
+              ingredients[index], checkBoxValues, checked, index, showCheckbox);
+        },
+      ),
+    );
+  }
+
+  Widget buildIngredientList() {
+    if (searching) {
+      startSearch(searchTextController.text);
+      return ingredientList(searchIngredients, checkBoxValues, true);
+    } else {
+      return ingredientList(currentIngredients, checkBoxValues, true);
+    }
+  }
+  
+  Widget buildNeedHaveList() {
+    final needListIndexes = <int, bool>{};
+    final haveListIndexes = <int, bool>{};
+    final ingredients = currentIngredients;
+    for (var index = 0; index < ingredients.length; index++) {
+      if (!checkBoxValues.containsKey(index)) {
+        needListIndexes[index] = true;
+      } else {
+        haveListIndexes[index] = true;
+      }
+    }
+    final needList = <Ingredient>[];
+    final haveList = <Ingredient>[];
+    for (var index = 0; index < ingredients.length; index++) {
+      if (needListIndexes.containsKey(index)) {
+        needList.add(ingredients[index]);
+      }
+      if (haveListIndexes.containsKey(index)) {
+        haveList.add(ingredients[index]);
+      }
+    }
+    final columnList = <Widget>[];
+    if (needList.isNotEmpty) {
+      columnList.add(const Text('Need'));
+      columnList.add(ingredientList(needList, null, false));
+    }
+    if (haveList.isNotEmpty) {
+      columnList.add(const Text('Have'));
+      columnList.add(ingredientList(haveList, null, false));
+    }
+    return Expanded(
+      child: Column(
+        children: columnList,
+      ),
+    );
+  }
+  
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    // TODO: Add Repository for ingredients
+    return Scaffold(
+      body: Column(
+        children: [
+          _buildHeader(),
+          buildSearchRow(),
+          showAll ? buildIngredientList() : buildNeedHaveList(),
+        ],
+      ),
+    );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
+import 'groceries/groceries.dart';
 import 'recipes/recipe_list.dart';
 import 'theme/colors.dart';
 import '../utils.dart';
@@ -25,12 +26,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   void initState() {
     super.initState();
     pageList.add(const RecipeList());
-    // TODO create a GroceryList
-    pageList.add(
-      const Center(
-        child: Text('Grocery List'),
-      )
-    );
+    pageList.add(const GroceriesList());
     getCurrentIndex();
   }
 
