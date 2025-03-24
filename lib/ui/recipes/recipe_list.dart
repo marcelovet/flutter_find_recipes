@@ -1,14 +1,18 @@
 import 'dart:math';
 import 'dart:ui';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/models/models.dart';
 import '../../network/model_response.dart';
 import '../../network/query_result.dart';
 import '../../network/service_interface.dart';
+import '../../network/spoonacular_model.dart';
 import '../bookmarks/bookmarks.dart';
+import '../recipe_card.dart';
 import '../theme/colors.dart';
 import '../widgets/common.dart';
 import '../widgets/custom_dropdown.dart';
@@ -94,24 +98,30 @@ class _RecipeListState extends ConsumerState<RecipeList> {
   }
   
   Future<RecipeResponse> fetchData() async {
-    if(!newDataRequired && currentResponse != null) {
+    if (!newDataRequired && currentResponse != null) {
       return currentResponse!;
     }
     newDataRequired = false;
-    // TODO: Load Recipes
+
+    final jsonString = await rootBundle.loadString('assets/recipes1.json');
+    final spoonacularResults = SpoonacularResults.fromJson(
+      jsonDecode(jsonString)
+    );
+    final recipes = spoonacularResultsToRecipe(spoonacularResults);
+    final apiQueryResults = QueryResult(
+      offset: spoonacularResults.offset,
+      number: spoonacularResults.number,
+      totalResults: spoonacularResults.totalResults,
+      recipes: recipes,
+    );
+    currentResponse = Future.value(Success(apiQueryResults));
     /*
         final recipeService = ref.watch(serviceProvider);
         currentResponse = recipeService.queryRecipes(
             searchTextController.text.trim(), currentStartPosition, pageCount);
-        return currentResponse!;
     */
-    const apiQueryResults = QueryResult(
-      offset: 0,
-      number: 0,
-      totalResults: 0,
-      recipes: <Recipe>[],
-    );
-    return Success(apiQueryResults);
+
+    return currentResponse ?? Future.error('No data found');
   }
 
   void startSearch(String value) {
@@ -288,7 +298,7 @@ class _RecipeListState extends ConsumerState<RecipeList> {
         ),
       ),
       // add  recipe card
-      child: Container(),
+      child: recipeCard(recipe),
     );
   }
   
