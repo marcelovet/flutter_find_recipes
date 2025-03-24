@@ -13,6 +13,7 @@ import '../theme/colors.dart';
 import '../widgets/common.dart';
 import '../widgets/custom_dropdown.dart';
 import 'recipe_details.dart';
+import '../../providers.dart';
 
 enum ListType {all, bookmarks}
 
@@ -24,8 +25,7 @@ class RecipeList extends ConsumerStatefulWidget {
 }
 
 class _RecipeListState extends ConsumerState<RecipeList> {
-  // TODO Add Search Index Key
-
+  static const String prefSearchKey = 'previousSearches';
   late TextEditingController searchTextController;
   final ScrollController _scrollController = ScrollController();
   List<Recipe> currentSearchList = [];
@@ -49,11 +49,15 @@ class _RecipeListState extends ConsumerState<RecipeList> {
   }
 
   void savePreviousSearches() async {
-    // TODO Save Current Index
+    final prefs = ref.read(sharedPrefProvider);
+    prefs.setStringList(prefSearchKey, previousSearches);
   }
 
   void getPreviousSearches() async {
-    // TODO Get Current Index
+    final prefs = ref.read(sharedPrefProvider);
+    if (prefs.containsKey(prefSearchKey)) {
+      previousSearches = prefs.getStringList(prefSearchKey) ?? <String>[];
+    }
   }
   
   @override
@@ -111,13 +115,15 @@ class _RecipeListState extends ConsumerState<RecipeList> {
   }
 
   void startSearch(String value) {
+    if(value.isEmpty) return;
+    
     setState(() {
       currentSearchList.clear();
       newDataRequired = true;
       currentCount = 0;
       currentEndPosition = pageCount;
       currentStartPosition = 0;
-      hasMore = false;
+      hasMore = true;
       value = value.trim();
       if (!previousSearches.contains(value)) {
         previousSearches.add(value);

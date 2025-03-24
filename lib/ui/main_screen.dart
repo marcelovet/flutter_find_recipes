@@ -7,6 +7,7 @@ import 'groceries/groceries.dart';
 import 'recipes/recipe_list.dart';
 import 'theme/colors.dart';
 import '../utils.dart';
+import '../providers.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key, required this.title});
@@ -20,7 +21,7 @@ class MainScreen extends ConsumerStatefulWidget {
 class _MainScreenState extends ConsumerState<MainScreen> {
   int _selectedIndex = 0;
   List<Widget> pageList = <Widget>[];
-  // TODO Add Index Key
+  static const String prefSelectedIndexKey = 'selectedIndex';
   
   @override
   void initState() {
@@ -31,11 +32,17 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   }
 
   void saveCurrentIndex() async {
-    // TODO Save Current Index
+    final prefs = ref.read(sharedPrefProvider);
+    prefs.setInt(prefSelectedIndexKey, _selectedIndex);
   }
 
   void getCurrentIndex() async {
-    // TODO Get Current Index
+    final prefs = ref.read(sharedPrefProvider);
+    if(prefs.containsKey(prefSelectedIndexKey)) {
+      setState(() {
+        _selectedIndex = prefs.getInt(prefSelectedIndexKey) ?? 0;
+      });
+    }
   }
 
   void _onItemTapped(int index) {
