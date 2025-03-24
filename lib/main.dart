@@ -1,18 +1,16 @@
-import 'package:colorize_lumberdash/colorize_lumberdash.dart';
 import 'package:desktop_window/desktop_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:logging/logging.dart' as system_log;
-import 'package:lumberdash/lumberdash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'recipe_finder_app.dart';
 import 'providers.dart';
 import 'utils.dart';
+import 'logging/logger.dart';
 
 Future<void> main() async {
-  _setupLogging();
+  setupLogging();
   WidgetsFlutterBinding.ensureInitialized(); // binding between Flutter and OS
    // hide status bar
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
@@ -27,14 +25,4 @@ Future<void> main() async {
     ],
     child: RecipeFinder(),
   )); // for state management
-}
-
-void _setupLogging() {
-  putLumberdashToWork(withClients: [
-    ColorizeLumberdash(),
-  ]);
-  system_log.Logger.root.level = system_log.Level.ALL;
-  system_log.Logger.root.onRecord.listen((rec) {
-      debugPrint('${rec.level.name}: ${rec.time}: ${rec.message}');
-  });
 }
