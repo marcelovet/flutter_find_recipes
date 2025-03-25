@@ -46,8 +46,8 @@ class SpoonacularResult {
 
 @JsonSerializable()
 class SpoonacularRecipe {
-  int preparationMinutes;
-  int cookingMinutes;
+  int? preparationMinutes;
+  int? cookingMinutes;
   String sourceName;
   List<ExtendedIngredient> extendedIngredients;
   int id;

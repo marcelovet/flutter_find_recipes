@@ -42,8 +42,8 @@ Map<String, dynamic> _$SpoonacularResultToJson(SpoonacularResult instance) =>
 
 SpoonacularRecipe _$SpoonacularRecipeFromJson(Map<String, dynamic> json) =>
     SpoonacularRecipe(
-      preparationMinutes: (json['preparationMinutes'] as num).toInt(),
-      cookingMinutes: (json['cookingMinutes'] as num).toInt(),
+      preparationMinutes: (json['preparationMinutes'] as num?)?.toInt(),
+      cookingMinutes: (json['cookingMinutes'] as num?)?.toInt(),
       sourceName: json['sourceName'] as String,
       extendedIngredients: (json['extendedIngredients'] as List<dynamic>)
           .map((e) => ExtendedIngredient.fromJson(e as Map<String, dynamic>))

@@ -32,6 +32,24 @@ class SpoonacularConverter implements Converter {
     }
     try {
       final mapData = jsonDecode(body) as Map<String, dynamic>;
+      for (final k in mapData.keys){
+        final keys = [
+          'preparationMinutes',
+          'cookingMinutes',
+          'sourceName',
+          'extendedIngredients',
+          'id',
+          'title',
+          'readyInMinutes',
+          'servings',
+          'sourceUrl',
+          'image',
+          'imageType',
+          'summary',
+          'instructions',
+        ];
+        if(keys.contains(k)) print('$k(value=${mapData[k]}, ${k.runtimeType})');
+      }
       // list of recipes
       if(mapData.keys.contains('totalResults')) {
         final spoonacularResults = SpoonacularResults.fromJson(mapData);
