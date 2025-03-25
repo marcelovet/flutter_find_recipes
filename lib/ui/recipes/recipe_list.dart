@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
+import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -99,19 +100,6 @@ class _RecipeListState extends ConsumerState<RecipeList> {
       return currentResponse!;
     }
     newDataRequired = false;
-
-    // final jsonString = await rootBundle.loadString('assets/recipes1.json');
-    // final spoonacularResults = SpoonacularResults.fromJson(
-    //   jsonDecode(jsonString)
-    // );
-    // final recipes = spoonacularResultsToRecipe(spoonacularResults);
-    // final apiQueryResults = QueryResult(
-    //   offset: spoonacularResults.offset,
-    //   number: spoonacularResults.number,
-    //   totalResults: spoonacularResults.totalResults,
-    //   recipes: recipes,
-    // );
-    // currentResponse = Future.value(Success(apiQueryResults));
     final recipeService = ref.watch(serviceProvider);
     currentResponse = recipeService.queryRecipes(
         searchTextController.text.trim(), currentStartPosition, pageCount);
@@ -343,11 +331,16 @@ class _RecipeListState extends ConsumerState<RecipeList> {
           }
 
           loading = false;
-          final result = snapshot.data;
-          
-          if(result is Error) {
-            const errorMessage = 'Problems getting data';
-            return const SliverFillRemaining(
+          if(false == snapshot.data?.isSuccessful) {
+            var errorMessage = 'Problems getting data';
+            if(
+              snapshot.data?.error != null
+              && snapshot.data?.error is LinkedHashMap
+            ) {
+              final map = snapshot.data?.error as LinkedHashMap;
+              errorMessage = map['message'] as String;
+            }
+            return SliverFillRemaining(
               child: Center(
                 child: Text(
                   errorMessage,
@@ -356,6 +349,12 @@ class _RecipeListState extends ConsumerState<RecipeList> {
                 ),
               ),
             );
+          }
+          
+          final result = snapshot.data?.body;
+          if(result == null || result is Error) {
+            inErrorState = true;
+            return _buildRecipeList(context, currentSearchList);
           }
 
           final query = (result as Success).value as QueryResult;

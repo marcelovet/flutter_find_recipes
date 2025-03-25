@@ -1,51 +1,60 @@
-import 'dart:convert';
-import 'dart:developer';
-import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'package:chopper/chopper.dart';
 
 //import '../data/models/models.dart';
 //import '../mock_service/mock_service.dart';
 import 'model_response.dart';
 import 'query_result.dart';
 import 'service_interface.dart';
-import 'spoonacular_model.dart';
+import 'spoonacular_converter.dart';
+import '../data/models/models.dart';
+
+part 'spoonacular_service.chopper.dart';
 
 const String apiKey = 'd609223568e64e61b4c67cdbf21b9330';
 const String apiUrl = 'https://api.spoonacular.com';
 
-class SpoonacularService implements ServiceInterface {
-  Future getData(String url) async {
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) return response.body;
-    log(response.statusCode.toString());
-  }
-
+@ChopperApi()
+abstract class SpoonacularService extends ChopperService 
+  implements ServiceInterface {
+  
   @override
+  @GET(path: 'recipes/complexSearch')
   Future<RecipeResponse> queryRecipes(
-    String query,
-    int offset,
-    int number,
-  ) async {
-    final recipeData = await getData(
-      '$apiUrl/recipes/complexSearch?apiKey=$apiKey&query=$query&offset=$offset&number=$number',
-    );
-    final spoonacularResults = SpoonacularResults.fromJson(
-      jsonDecode(recipeData)
-    );
-    final recipes = spoonacularResultsToRecipe(spoonacularResults);
-    final apiQueryResults = QueryResult(
-      offset: spoonacularResults.offset,
-      number: spoonacularResults.number,
-      totalResults: spoonacularResults.totalResults,
-      recipes: recipes,
-    );
-    return Success(apiQueryResults);
-  }
+    @Query('query') String query,
+    @Query('offset') int offset,
+    @Query('number') int number,
+  );
 
   @override
+  @GET(path: 'recipes/{id}/information?includeNutrition=false')
   Future<RecipeDetailsResponse> queryRecipe(
-    String id,
-  ) {
-    // TODO: implement queryRecipe
-    throw UnimplementedError();
+    @Path('id') String id,
+  );
+
+  static SpoonacularService create() {
+    final client = ChopperClient(
+      baseUrl: Uri.parse(apiUrl),
+      interceptors: [QueryInterceptor(), HttpLoggingInterceptor()],
+      converter: SpoonacularConverter(),
+      errorConverter: JsonConverter(),
+      services: [
+        _$SpoonacularService(),
+      ]
+    );
+    return _$SpoonacularService(client);
+  }
+}
+
+class QueryInterceptor implements Interceptor {
+  @override
+  FutureOr<Response<BodyType>> intercept<BodyType>(
+    Chain<BodyType> chain
+  ) async {
+    final request = chain.request;
+    final params = Map<String, dynamic>.from(request.parameters);
+    params['apiKey'] = apiKey;
+    final response = await chain.proceed(request.copyWith(parameters: params));
+    return response;
   }
 }
