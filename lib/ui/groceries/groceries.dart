@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/models/ingredient.dart';
+import '../../providers.dart';
 import '../theme/colors.dart';
 import '../widgets/common.dart';
 import '../widgets/ingredient_card.dart';
@@ -175,6 +176,8 @@ class _GroceriesListState extends ConsumerState<GroceriesList> {
   }
 
   Widget buildIngredientList() {
+    final repository = ref.watch(repositoryProvider);
+    currentIngredients = repository.currentIngredients;
     if (searching) {
       startSearch(searchTextController.text);
       return ingredientList(searchIngredients, checkBoxValues, true);
@@ -184,6 +187,8 @@ class _GroceriesListState extends ConsumerState<GroceriesList> {
   }
   
   Widget buildNeedHaveList() {
+    final repository = ref.watch(repositoryProvider);
+    currentIngredients = repository.currentIngredients;
     final needListIndexes = <int, bool>{};
     final haveListIndexes = <int, bool>{};
     final ingredients = currentIngredients;

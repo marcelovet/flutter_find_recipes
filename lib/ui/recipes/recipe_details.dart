@@ -94,7 +94,7 @@ class _RecipeDetailsState extends ConsumerState<RecipeDetails> {
   }
 
   Widget titleRow() {
-    // TODO: Add Repository
+    final repository = ref.read(repositoryProvider.notifier);
     final titleRowColor = widget.recipe.bookmarked
         ? Colors.black
         : Colors.white;
@@ -133,11 +133,10 @@ class _RecipeDetailsState extends ConsumerState<RecipeDetails> {
               onPressed: () {
                 if (!widget.recipe.bookmarked) {
                   if (recipeDetail != null) {
-                    // TODO: Insert Recipe
+                    repository.insertRecipe(recipeDetail!);
                   }
-                // ignore: dead_code
                 } else {
-                  // TODO: Delete Recipe
+                  repository.deleteRecipe(recipeDetail!);
                 }
                 Navigator.pop(context);
               },

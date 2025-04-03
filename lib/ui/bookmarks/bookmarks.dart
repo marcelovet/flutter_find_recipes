@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+
 import '../../data/models/recipe.dart';
+import '../../providers.dart';
+import '../recipes/recipe_details.dart';
 
 class Bookmarks extends ConsumerStatefulWidget {
   const Bookmarks({super.key});
@@ -21,7 +24,9 @@ class _BookmarkState extends ConsumerState<Bookmarks> {
   }
 
   Widget _buildBookmarks(BuildContext context) {
-    // TODO: Add Repository
+    final repository = ref.watch(repositoryProvider);
+    recipes = repository.currentRecipes;
+
     return SliverLayoutBuilder(
       builder: (BuildContext context, SliverConstraints constraints) {
         return SliverList.builder(
@@ -41,7 +46,7 @@ class _BookmarkState extends ConsumerState<Bookmarks> {
                       foregroundColor: Colors.black,
                       icon: Icons.delete,
                       onPressed: (context) {
-                        // TODO Add Delete
+                        deleteRecipe(recipe);
                       },
                     ),
                   ],
@@ -56,14 +61,22 @@ class _BookmarkState extends ConsumerState<Bookmarks> {
                       foregroundColor: Colors.black,
                       icon: Icons.delete,
                       onPressed: (context) {
-                        // TODO Add Delete
+                        deleteRecipe(recipe);
                       },
                     ),
                   ],
                 ),
                 child: GestureDetector(
                   onTap: () {
-                    // TODO: Add Push to Recipe Details Page
+                    Navigator.push(context, MaterialPageRoute(
+                      builder: (context) {
+                        return RecipeDetails(
+                          recipe: recipe.copyWith(
+                            bookmarked: true,
+                          )
+                        );
+                      }
+                    ));
                   },
                   child: Card(
                     elevation: 1.0,
@@ -97,5 +110,7 @@ class _BookmarkState extends ConsumerState<Bookmarks> {
     // TODO: Add else here
   }
 
-  // TODO: Add Delete Recipe
+  void deleteRecipe(Recipe recipe) {
+    ref.read(repositoryProvider.notifier).deleteRecipe(recipe);
+  }
 }
