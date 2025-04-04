@@ -37,6 +37,12 @@ dependencies:
   http: ^1.3.0
   chopper: ^8.1.0
   chopper_generator: ^8.1.0
+  synchronized: ^3.3.1
+  sqlbrite: ^2.8.0
+  sqlite3_flutter_libs: ^0.5.32
+  web_ffi: ^0.7.2
+  sqlite3: ^2.7.5
+  drift: ^2.26.0
 
 dev_dependencies:
   flutter_test:
@@ -46,6 +52,7 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   freezed: ^3.0.4
   json_serializable: ^6.9.4
+  drift_dev: ^2.26.0
 
 flutter:
   uses-material-design: true

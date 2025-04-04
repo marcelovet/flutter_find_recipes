@@ -28,7 +28,13 @@ class _GroceriesListState extends ConsumerState<GroceriesList> {
   void initState() {
     super.initState();
     searchTextController = TextEditingController(text: '');
-    // TODO: Add Ingredient Stream
+    final repository = ref.read(repositoryProvider.notifier);
+    final ingredientsStream = repository.watchAllIngredients();
+    ingredientsStream.listen((ingredients) {
+      setState(() {
+        currentIngredients = ingredients;
+      });
+    });
   }
 
   @override
@@ -176,8 +182,6 @@ class _GroceriesListState extends ConsumerState<GroceriesList> {
   }
 
   Widget buildIngredientList() {
-    final repository = ref.watch(repositoryProvider);
-    currentIngredients = repository.currentIngredients;
     if (searching) {
       startSearch(searchTextController.text);
       return ingredientList(searchIngredients, checkBoxValues, true);
@@ -227,7 +231,6 @@ class _GroceriesListState extends ConsumerState<GroceriesList> {
   
   @override
   Widget build(BuildContext context) {
-    // TODO: Add Repository for ingredients
     return Scaffold(
       body: Column(
         children: [
